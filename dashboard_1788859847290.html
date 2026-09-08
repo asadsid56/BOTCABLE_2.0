@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dashboard – BOT Cable</title>
+<link rel="icon" type="image/png" href="./favicon_1788859847289.png">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+<style>
+  /* ===========================
+     GitHub-like Glassmorphism
+     =========================== */
+:root{
+    --bg: #f6f8fa;
+    --panel: rgba(255,255,255,0.75);
+    --panel-border: rgba(27,31,36,0.06);
+    --muted: #57606a;
+    --text: #24292f;
+    --radius: 12px;
+    --shadow: 0 6px 18px rgba(140,149,159,0.12);
+    --blur: saturate(180%) blur(8px);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* NAV */
+  .navbar{
+    position: sticky;
+    top:0;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 20px;
+    backdrop-filter:var(--blur);
+    background:var(--panel);
+    border-bottom:1px solid var(--panel-border);
+    box-shadow:var(--shadow);
+  }
+  .nav-logo{height:36px}
+  .nav-login{
+    padding:6px 10px;border-radius:8px;border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.5); cursor:pointer;
+  }
+
+  /* MAIN LAYOUT */
+  .wrapper{
+    max-width:1400px;
+    margin:22px auto;
+    padding:0 20px;
+  }
+
+  /* Counters row */
+  .counter-row{
+    display:grid;
+    grid-template-columns: repeat(4, minmax(140px,1fr));
+    gap:16px;
+    margin-bottom:12px;
+  }
+  .counter-card{
+    padding:16px;border-radius:12px;background:var(--panel);
+    border:1px solid var(--panel-border); box-shadow:var(--shadow);
+  }
+  .counter-title{ font-size:13px;color:var(--muted) }
+  .counter-value{ font-size:28px;font-weight:700;margin-top:8px }
+
+  /* Dashboard layout: aside + main */
+  .dash-grid{
+    display:grid;
+    grid-template-columns: 320px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+
+  /* ASIDE (sticky + scrollable) */
+  .aside{
+    position:relative;
+  }
+  .aside-inner{
+    position:sticky;
+    top:20px;
+    min-height: calc(100vh - 40px);
+    overflow:visible;
+    padding:18px;
+    border-radius:12px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    box-shadow:var(--shadow);
+  }
+  .aside h2{ margin:0 0 12px 0; font-size:18px }
+  .aside .section{ margin-bottom:18px }
+  .select, .input, .btn {
+    width:100%; padding:10px;border-radius:8px;border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.6);
+    font-size:14px;
+  }
+  .btn {
+    background:var(--text); color:white; border:none; cursor:pointer;
+  }
+  .muted{ color:var(--muted); font-size:13px }
+
+  /* Sidebar stats like screenshot */
+  .stat{
+    margin-top:14px;
+  }
+  .stat .big{ font-size:36px; font-weight:700; margin-top:6px }
+  .stat .label{ color:var(--muted); margin-top:8px; font-size:13px }
+
+  /* Main charts area: 2x2 grid + full width row for year */
+  .charts-area{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:20px;
+  }
+  .chart-card{
+    padding:18px;border-radius:12px;background:var(--panel);
+    border:1px solid var(--panel-border); box-shadow:var(--shadow);
+    min-height:200px;
+  }
+  .chart-card h3{ margin:0 0 8px 0; font-size:16px }
+
+  /* Year chart full width */
+  .year-row{
+    grid-column: 1 / -1;
+  }
+
+  /* Summary grid below (keeps original summary) */
+  .summary{
+    margin-top:20px;
+    padding:18px;border-radius:12px;background:var(--panel);
+    border:1px solid var(--panel-border); box-shadow:var(--shadow);
+  }
+  .summary-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-top:12px }
+  .summary-item{ padding:12px;border-radius:10px;background:#f8dd9a; text-align:center; font-weight:600 }
+
+  /* Responsive */
+  @media (max-width:1000px){
+    .dash-grid{ grid-template-columns: 1fr; }
+    .charts-area{ grid-template-columns: 1fr; }
+    .aside-inner{ position:relative; max-height:none; margin-bottom:16px }
+  }
+
+  /* scrollbar small */
+  .aside-inner::-webkit-scrollbar{ width:10px }
+  .aside-inner::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.06); border-radius:10px }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <img src="./logo_1788859847289.png" alt="logo" class="nav-logo">
+  <div class="nav-login" onclick="location.href='index_1788859847291.html'">🔐</div>
+</nav>
+
+<div class="wrapper">
+
+  <!-- COUNTERS -->
+  <div class="counter-row">
+    <div class="counter-card">
+      <div class="counter-title">Total cases</div>
+      <div id="countTotal" class="counter-value">0</div>
+    </div>
+    <div class="counter-card">
+      <div class="counter-title">Total cases today</div>
+      <div id="countToday" class="counter-value">0</div>
+    </div>
+    <div class="counter-card">
+      <div class="counter-title">Average cases / hour</div>
+      <div id="avgPerHour" class="counter-value">0</div>
+    </div>
+    <div class="counter-card">
+      <div class="counter-title">Most active hour</div>
+      <div id="mostActiveHour" class="counter-value">—</div>
+    </div>
+  </div>
+
+  <!-- DASH GRID: ASIDE + MAIN -->
+  <div class="dash-grid">
+
+    <!-- ASIDE (sticky + scrollable) -->
+    <aside class="aside">
+      <div class="aside-inner">
+        <h2>Filters</h2>
+
+        <div class="section">
+          <label class="muted">Time Range</label>
+          <select id="timeRange" class="select">
+            <option value="last7">Last 7 days</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="last30">Last 30 days</option>
+            <option value="thisMonth">This month</option>
+            <option value="thisYear">This year</option>
+            <option value="all">All time</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <label class="muted">Category</label>
+          <select id="filterCategory" class="select">
+            <option value="all">All</option>
+            <option>Internet Down</option>
+            <option>Internet Quality</option>
+            <option>Wifi</option>
+            <option>TV Down</option>
+            <option>TV Quality</option>
+            <option>Orange TV Plus App</option>
+            <option>Repair</option>
+            <option>Ingress</option>
+            <option>Drop quotation</option>
+          </select>
+        </div>
+
+        <div class="section">
+          <label class="muted">Specific Date</label>
+          <input id="filterDate" class="input" type="date" />
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="applyFilters" class="btn" style="flex:1">Apply Filters</button>
+          <button id="resetFilters" class="btn" style="flex:1; background:#6b7280">Reset</button>
+        </div>
+
+        <hr style="margin:16px 0; border-color:var(--panel-border)" />
+
+        <!-- Sidebar Stats (like screenshot) -->
+        <div class="stat">
+          <div class="muted">Total notes selected</div>
+          <div id="sideTotal" class="big" style="font-size:30px; font-weight:700; margin-top:8px">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="muted">Average cases per hour</div>
+          <div id="sideAvg" class="big" style="font-size:28px">0</div>
+        </div>
+
+        <div class="stat">
+          <div class="muted">Most active hour</div>
+          <div id="sideActive" class="big" style="font-size:28px">—</div>
+        </div>
+
+        <div class="stat">
+          <div class="muted">Streak days</div>
+          <div id="streakDays" class="big" style="font-size:28px">0</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CHARTS -->
+    <main>
+      <div class="charts-area">
+        <div class="chart-card">
+          <h3>Cases per hour</h3>
+          <canvas id="chartHour"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3>Cases per day</h3>
+          <canvas id="chartDay"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3>Cases per week</h3>
+          <canvas id="chartWeek"></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h3>Cases per month</h3>
+          <canvas id="chartMonth"></canvas>
+        </div>
+
+        <div class="chart-card year-row">
+          <h3>Cases per year</h3>
+          <canvas id="chartYear"></canvas>
+        </div>
+      </div>
+
+      <!-- Summary below -->
+      <section class="summary">
+        <h3>Cases by Type</h3>
+        <div class="summary-grid" id="summaryGrid"></div>
+      </section>
+    </main>
+
+  </div>
+</div>
+
+<script>
+/* ======================================================
+   Data source: localStorage "notes_v1"
+   Each note expected: { created: ISO_string_or_timestamp, title: "Category name", ... }
+   ====================================================== */
+let notes = JSON.parse(localStorage.getItem("notes_v1")) || [];
+
+/* Chart instances */
+let chartHour, chartDay, chartWeek, chartMonth, chartYear;
+
+/* Utility: parse date safely */
+function toDate(d){
+  return d instanceof Date ? d : new Date(d);
+}
+
+/* ======================================================
+   FILTER / SELECTION logic
+   ====================================================== */
+function getTimeRangeValue(range){
+  const now = new Date();
+  switch(range){
+    case "today": {
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return { from: start, to: new Date(start.getTime() + 24*3600*1000) };
+    }
+    case "yesterday": {
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      return { from: start, to: new Date(start.getTime() + 24*3600*1000) };
+    }
+    case "last7": {
+      const from = new Date(now.getTime() - 7*24*3600*1000);
+      return { from, to: now };
+    }
+    case "last30": {
+      const from = new Date(now.getTime() - 30*24*3600*1000);
+      return { from, to: now };
+    }
+    case "thisMonth": {
+      const from = new Date(now.getFullYear(), now.getMonth(), 1);
+      return { from, to: now };
+    }
+    case "thisYear": {
+      const from = new Date(now.getFullYear(), 0, 1);
+      return { from, to: now };
+    }
+    default:
+      return null;
+  }
+}
+
+function applyFilters(){
+  const range = document.getElementById("timeRange").value;
+  const category = document.getElementById("filterCategory").value;
+  const date = document.getElementById("filterDate").value;
+
+  let filtered = [...notes];
+
+  // time range
+  const tr = getTimeRangeValue(range);
+  if(tr){
+    filtered = filtered.filter(n=>{
+      const d = toDate(n.created);
+      return d >= tr.from && d <= tr.to;
+    });
+  }
+
+  // specific date exact match if set
+  if(date){
+    const match = date; // YYYY-MM-DD
+    filtered = filtered.filter(n=> toDate(n.created).toISOString().slice(0,10) === match );
+  }
+
+  // category
+  if(category && category !== "all"){
+    filtered = filtered.filter(n => n.title === category);
+  }
+
+  renderAll(filtered);
+}
+
+/* Reset filters to default (Last 7 days) */
+function resetFilters(){
+  document.getElementById("timeRange").value = "last7";
+  document.getElementById("filterCategory").value = "all";
+  document.getElementById("filterDate").value = "";
+  applyFilters();
+}
+
+/* ======================================================
+   STATS & DERIVED METRICS
+   ====================================================== */
+function computeStats(data){
+  const total = data.length;
+  const todayStr = new Date().toLocaleDateString();
+  const totalToday = data.filter(n => toDate(n.created).toLocaleDateString() === todayStr).length;
+
+  // avg per hour = total / (unique hours covered or 24 for long range). We'll use total / 24 if range spans >= 24h else unique hours
+  let avgPerHour = 0;
+  if(total === 0) avgPerHour = 0;
+  else {
+    const hours = new Set(data.map(n=> toDate(n.created).getHours() ));
+    avgPerHour = +(total / Math.max(hours.size, 1)).toFixed(2);
+  }
+
+  // most active hour
+  const hourCounts = Array(24).fill(0);
+  data.forEach(n => hourCounts[toDate(n.created).getHours()]++);
+  const maxHour = hourCounts.indexOf(Math.max(...hourCounts));
+  const mostActive = data.length ? `${String(maxHour).padStart(2,'0')}:00` : "—";
+
+  // streak days: count consecutive days up to today that have at least one note
+  const daySet = new Set(data.map(n => toDate(n.created).toISOString().slice(0,10)));
+  let streak = 0;
+  let d = new Date();
+  while(true){
+    const s = d.toISOString().slice(0,10);
+    if(daySet.has(s)){ streak++; d.setDate(d.getDate()-1) } else break;
+  }
+
+  return { total, totalToday, avgPerHour, mostActive, streak };
+}
+
+/* ======================================================
+   CHART BUILDERS
+   Each builder destroys the previous chart instance if present
+   ====================================================== */
+
+function destroyIfExists(chart){
+  try{ if(chart && typeof chart.destroy === 'function') chart.destroy(); }catch(e){}
+}
+
+/* 1) Notes per hour — line */
+function buildChartHour(data){
+  destroyIfExists(chartHour);
+  const counts = Array(24).fill(0);
+  data.forEach(n => counts[toDate(n.created).getHours()]++);
+  const ctx = document.getElementById("chartHour").getContext("2d");
+  chartHour = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: Array.from({length:24}, (_,i)=> String(i)),
+      datasets: [{
+        label: "Notes / hour",
+        data: counts,
+        fill: true,
+        tension: 0.3,
+        backgroundColor: "rgba(33,150,243,0.12)",
+        borderColor: "rgba(33,150,243,0.9)",
+        pointRadius:3
+      }]
+    },
+    options: {
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{ y:{ beginAtZero:true }}
+    }
+  });
+}
+
+/* 2) Notes per day — vertical bar */
+function buildChartDay(data){
+  destroyIfExists(chartDay);
+  const map = {};
+  data.forEach(n=>{
+    const d = toDate(n.created).toLocaleDateString();
+    map[d] = (map[d] || 0) + 1;
+  });
+  const labels = Object.keys(map);
+  const values = Object.values(map);
+
+  const ctx = document.getElementById("chartDay").getContext("2d");
+  chartDay = new Chart(ctx, {
+    type: "bar",
+    data:{
+      labels,
+      datasets:[{
+        label:"Notes / day",
+        data: values,
+        backgroundColor: "rgba(99,102,241,0.9)",
+        borderRadius:6
+      }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true }} }
+  });
+}
+
+/* 3) Notes per week — polarArea */
+function buildChartWeek(data){
+  destroyIfExists(chartWeek);
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const counts = Array(7).fill(0);
+  data.forEach(n => {
+    counts[toDate(n.created).getDay()]++;
+  });
+  const ctx = document.getElementById("chartWeek").getContext("2d");
+  chartWeek = new Chart(ctx, {
+    type: "polarArea",
+    data:{
+      labels: days,
+      datasets:[{
+        data: counts,
+        backgroundColor: [
+          "rgba(255,99,132,0.6)","rgba(54,162,235,0.6)","rgba(255,205,86,0.6)",
+          "rgba(75,192,192,0.6)","rgba(153,102,255,0.6)","rgba(255,159,64,0.6)","rgba(201,203,207,0.6)"
+        ]
+      }]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'right'}} }
+  });
+}
+
+/* 4) Notes per month — horizontal bar */
+function buildChartMonth(data){
+  destroyIfExists(chartMonth);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const counts = Array(12).fill(0);
+  data.forEach(n => counts[toDate(n.created).getMonth()]++);
+
+  const ctx = document.getElementById("chartMonth").getContext("2d");
+  chartMonth = new Chart(ctx, {
+    type: "bar",
+    data:{
+      labels: months,
+      datasets:[{
+        label:"Notes / month",
+        data: counts,
+        borderRadius:6,
+        barThickness:18
+      }]
+    },
+    options:{
+      indexAxis: 'y',
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{ x:{ beginAtZero:true }}
+    }
+  });
+}
+
+/* 5) Notes per year — yearly totals per year month-line (filled) */
+function buildChartYear(data){
+  destroyIfExists(chartYear);
+  // Yearly: group by year-month for the last couple years — but we'll show per-month totals in the selected time range's year if possible.
+  const monthLabels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const monthly = Array(12).fill(0);
+  data.forEach(n => monthly[toDate(n.created).getMonth()]++);
+
+  const ctx = document.getElementById("chartYear").getContext("2d");
+  chartYear = new Chart(ctx, {
+    type: "line",
+    data:{
+      labels: monthLabels,
+      datasets:[{
+        label:"Notes (monthly totals)",
+        data: monthly,
+        fill:true,
+        tension:0.35,
+        backgroundColor:"rgba(16,185,129,0.12)",
+        borderColor:"rgba(16,185,129,0.95)",
+        pointRadius:3
+      }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true }} }
+  });
+}
+
+/* ======================================================
+   Summary grid
+   ====================================================== */
+function buildSummaryGrid(data){
+  const box = document.getElementById("summaryGrid");
+  box.innerHTML = "";
+  const counts = {};
+  data.forEach(n => counts[n.title] = (counts[n.title] || 0) + 1 );
+  Object.entries(counts).forEach(([t,c])=>{
+    const el = document.createElement("div");
+    el.className = "summary-item";
+    el.textContent = `${t}: ${c}`;
+    box.appendChild(el);
+  });
+}
+
+/* ======================================================
+   Render everything with provided data
+   ====================================================== */
+function renderAll(data){
+  // stats
+  const s = computeStats(data);
+  document.getElementById("countTotal").textContent = s.total;
+  document.getElementById("countToday").textContent = s.totalToday;
+  document.getElementById("avgPerHour").textContent = s.avgPerHour;
+  document.getElementById("mostActiveHour").textContent = s.mostActive;
+
+  // sidebar small stats
+  document.getElementById("sideTotal").textContent = s.total;
+  document.getElementById("sideAvg").textContent = s.avgPerHour;
+  document.getElementById("sideActive").textContent = s.mostActive;
+  document.getElementById("streakDays").textContent = s.streak;
+
+  // charts
+  buildChartHour(data);
+  buildChartDay(data);
+  buildChartWeek(data);
+  buildChartMonth(data);
+  buildChartYear(data);
+
+  // summary
+  buildSummaryGrid(data);
+}
+
+/* ======================================================
+   Init
+   ====================================================== */
+document.getElementById("applyFilters").addEventListener("click", applyFilters);
+document.getElementById("resetFilters").addEventListener("click", resetFilters);
+
+// initial: default to last7
+document.getElementById("timeRange").value = "last7";
+
+// if there is no data shape, create demo data for visual testing (optional)
+// You can remove the demo generator block if you already have notes_v1 in localStorage
+if(!notes || !Array.isArray(notes) || notes.length === 0){
+  // small demo dataset (keeps file useful on first open)
+  const now = new Date();
+  notes = [];
+  for(let i=0;i<45;i++){
+    const d = new Date(now.getTime() - Math.floor(Math.random()*45)*24*3600*1000);
+    d.setHours(Math.floor(Math.random()*24));
+    notes.push({
+      created: d.toISOString(),
+      title: ["Internet Down","Wifi","TV Down","Repair","Internet Quality"][Math.floor(Math.random()*5)]
+    });
+  }
+  // persist demo so charts render
+  localStorage.setItem("notes_v1", JSON.stringify(notes));
+}
+
+// render with default filters (last7)
+applyFilters();
+</script>
+</body>
+</html>

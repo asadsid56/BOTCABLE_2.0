@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="./favicon_1788859847289.png">
+  <title>Orange BOT Cable - Asad's Team</title>
+  <link rel="stylesheet" href="style_1788859847291.css">
+</head>
+
+<body>
+  <nav class="navbar glass-nav">
+  <div class="nav-left">
+    <a href="#" class="brand" aria-label="BOT Cable home">
+      <img src="./logo_1788859847289.png" alt="BOT Cable logo" class="nav-logo" />
+      <span>
+        <strong class="nav-title">BOT Cable</strong>
+        <small>Case workspace</small>
+      </span>
+    </a>
+  </div>
+  <div class="nav-right">
+    <button id="manageTitles" class="glass-button secondary-button" type="button">⚙ Titles</button>
+    <button id="exportBtn" class="glass-button secondary-button" type="button">Export</button>
+    <button id="importBtn" class="glass-button secondary-button" type="button">Import</button>
+    <input type="file" id="importFile" accept="application/json" hidden />
+    <a href="dashboard_1788859847290.html" class="glass-link">Dashboard</a>
+  </div>
+</nav>
+
+  <div class="wrap">
+    <header>
+      <div class="page-heading">
+        <div class="eyebrow">CASE NOTES</div>
+        <h1>Keep every customer case moving.</h1>
+        <p>Capture the issue, copy the details, and get back to the customer faster.</p>
+      </div>
+      <div class="controls">
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="search" type="search" placeholder="Search cases or content…" aria-label="Search cases or content" />
+        </label>
+        <button id="showForm" title="Add note" class="primary-button" type="button">＋ Add case</button>
+      </div>
+    </header>
+    <section id="titleManager" class="title-manager" hidden aria-labelledby="titleManagerHeading">
+      <div class="manager-heading">
+        <div>
+          <div class="eyebrow">CASE TYPES</div>
+          <h2 id="titleManagerHeading">Manage titles</h2>
+          <p>Add, rename, or remove the titles you use most. Removing a title does not remove existing cases.</p>
+        </div>
+        <button id="closeTitleManager" class="iconbtn close-button" type="button" aria-label="Close title manager">×</button>
+      </div>
+      <form id="titleForm" class="title-form" autocomplete="off">
+        <input id="titleInput" type="text" maxlength="60" placeholder="New case title" aria-label="Case title" required />
+        <button id="saveTitle" class="primary-button" type="submit">Add title</button>
+        <button id="cancelTitleEdit" class="glass-button secondary-button" type="button" hidden>Cancel</button>
+      </form>
+      <div id="titleList" class="title-list" aria-live="polite"></div>
+    </section>
+    <form id="noteForm" autocomplete="off">
+      <div class="form-heading">
+        <div>
+          <div class="eyebrow">NEW CASE</div>
+          <h2 id="formHeading">Add a case</h2>
+        </div>
+        <button id="cancelForm" class="iconbtn close-button" type="button" aria-label="Close case form">×</button>
+      </div>
+      <div class="row">
+        <input id="noteCC" placeholder="CC (Customer Code)" />
+        <input id="noteTitle" list="presetTitles" placeholder="Case title (choose or type…)" maxlength="60" required />
+      </div>
+      <div class="row">
+        <textarea id="noteContent" placeholder="What happened? Add the key details here…" rows="4"></textarea>
+      </div>
+      <div class="form-actions">
+        <span class="form-hint">Tip: use <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to save</span>
+        <button id="saveNote" class="primary-button" type="submit">Save case</button>
+      </div>
+    </form>
+    <datalist id="presetTitles"></datalist>
+
+    <div class="list-toolbar">
+      <div>
+        <h2>Recent cases</h2>
+        <span id="resultCount" class="muted">0 cases</span>
+      </div>
+      <button id="clearSearch" class="text-button" type="button" hidden>Clear search</button>
+    </div>
+    <main id="notesGrid" aria-live="polite"></main>
+  </div>
+
+
+
+<!-- Your notes JS remains the same as before -->
+ <script src="app_1788859847289.js"></script>
+
+</body>
+
+</html>
+
