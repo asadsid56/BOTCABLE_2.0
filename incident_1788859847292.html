@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10233f">
+  <link rel="icon" type="image/png" href="./favicon_1788859847289.png">
+  <title>Incidents – BOT Cable</title>
+  <style>
+    :root {
+      --ink: #10233f;
+      --muted: #71809a;
+      --blue: #246bfe;
+      --blue-dark: #1747b5;
+      --line: rgba(16, 35, 63, .12);
+      --panel: rgba(255, 255, 255, .86);
+      --soft-blue: #eef4ff;
+      --danger: #c53030;
+      --shadow: 0 14px 34px rgba(32, 68, 120, .10);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(36, 107, 254, .11), transparent 28rem),
+        linear-gradient(145deg, #f7faff 0%, #f3f6fb 55%, #edf3ff 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    textarea:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(36, 107, 254, .28);
+      outline-offset: 2px;
+    }
+    .navbar {
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1180px, calc(100% - 32px));
+      min-height: 68px;
+      margin: 14px auto 0;
+      padding: 10px 16px 10px 20px;
+      border: 1px solid rgba(255, 255, 255, .92);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .78);
+      box-shadow: 0 16px 40px rgba(32, 68, 120, .10);
+      backdrop-filter: blur(14px) saturate(160%);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand img { width: 43px; height: 43px; border-radius: 12px; object-fit: cover; }
+    .brand span { display: grid; gap: 1px; }
+    .brand strong { font-size: 1.12rem; }
+    .brand small {
+      color: var(--muted);
+      font-size: .71rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .nav-actions { display: flex; gap: 7px; align-items: center; }
+    .nav-link, .button, .icon-button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: #31435e;
+      background: rgba(255, 255, 255, .75);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .nav-link, .button { padding: .57rem .82rem; font-size: .82rem; }
+    .nav-link:hover, .button:hover, .icon-button:hover {
+      color: var(--blue-dark);
+      background: var(--soft-blue);
+      border-color: rgba(36, 107, 254, .25);
+      transform: translateY(-1px);
+    }
+    .page {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 42px 0 60px;
+    }
+    .hero {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      color: var(--blue);
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 7px 0;
+      font-size: clamp(1.9rem, 4vw, 2.75rem);
+      letter-spacing: -.045em;
+      line-height: 1.08;
+    }
+    .hero p { margin: 0; color: #667793; }
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--blue);
+      border-radius: 11px;
+      padding: 11px 15px;
+      color: #fff;
+      background: linear-gradient(135deg, #3177ff, #2059dd);
+      box-shadow: 0 8px 18px rgba(36, 107, 254, .20);
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .primary:hover { filter: brightness(1.04); transform: translateY(-1px); }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 12px;
+      border: 1px solid rgba(16, 35, 63, .08);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .72);
+      box-shadow: 0 8px 22px rgba(32, 68, 120, .06);
+    }
+    .search-wrap { display: flex; align-items: center; flex: 1; gap: 8px; }
+    .search-wrap span { color: #7b8aa2; font-size: 1.35rem; }
+    .search, .select, .field, .form-textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .search { border: 0; padding-left: 0; background: transparent; }
+    .search:focus { outline: 0; }
+    .select { width: 190px; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      padding: 14px 16px;
+      border: 1px solid rgba(16, 35, 63, .08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .72);
+    }
+    .stat-label { color: var(--muted); font-size: .76rem; }
+    .stat-value { margin-top: 4px; font-size: 1.5rem; font-weight: 800; }
+    .incident-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .incident-card {
+      overflow: hidden;
+      border: 1px solid rgba(16, 35, 63, .10);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 10px 26px rgba(32, 68, 120, .07);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .incident-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .incident-card[open] { border-color: rgba(36, 107, 254, .25); }
+    .incident-summary {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .incident-summary::-webkit-details-marker { display: none; }
+    .incident-summary::after {
+      content: "⌄";
+      flex: 0 0 auto;
+      color: #8190a7;
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: transform .18s ease;
+    }
+    .incident-card[open] .incident-summary::after { transform: rotate(180deg); }
+    .incident-title {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+    .category {
+      display: inline-flex;
+      padding: 4px 8px;
+      border-radius: 99px;
+      color: #31527e;
+      background: #eaf1ff;
+      font-size: .7rem;
+      font-weight: 700;
+    }
+    .category.tv { color: #704c16; background: #fff3d7; }
+    .category.phone { color: #1a6b55; background: #ddf7ed; }
+    .category.app { color: #77438c; background: #f5e4ff; }
+    .description {
+      margin: 0;
+      padding: 0 16px 16px;
+      border-top: 1px solid rgba(16, 35, 63, .07);
+      color: #425672;
+      font-size: .9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .description p { margin: 13px 0 0; }
+    .incident-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 16px 14px;
+      color: var(--muted);
+      font-size: .72rem;
+    }
+    .card-actions { display: flex; gap: 5px; }
+    .icon-button { padding: 5px 8px; font-size: .78rem; }
+    .icon-button.danger:hover { color: var(--danger); background: #fff5f5; border-color: rgba(197, 48, 48, .25); }
+    .empty {
+      grid-column: 1 / -1;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      padding: 62px 20px;
+      border: 1px dashed #b9c9e4;
+      border-radius: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .empty strong { color: var(--ink); }
+    dialog {
+      width: min(560px, calc(100% - 28px));
+      padding: 0;
+      border: 0;
+      border-radius: 18px;
+      color: var(--ink);
+      background: #f8fbff;
+      box-shadow: 0 24px 80px rgba(15, 35, 70, .28);
+    }
+    dialog::backdrop { background: rgba(16, 35, 63, .42); backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 22px; }
+    .dialog-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .dialog-heading h2 { margin: 3px 0 0; font-size: 1.25rem; }
+    .field-group { display: grid; gap: 7px; margin-bottom: 14px; }
+    .field-group label { color: #4d607c; font-size: .8rem; font-weight: 700; }
+    .form-textarea { min-height: 150px; resize: vertical; line-height: 1.5; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    .button.cancel { background: transparent; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    [hidden] { display: none !important; }
+    @media (max-width: 720px) {
+      .navbar { position: static; width: calc(100% - 20px); }
+      .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
+      .nav-link { padding: 7px; font-size: .75rem; }
+      .page { width: calc(100% - 24px); padding-top: 30px; }
+      .hero { display: block; }
+      .hero .primary { width: 100%; margin-top: 18px; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .select { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .brand small { display: none; }
+      .brand img { width: 36px; height: 36px; }
+      .brand strong { font-size: 1rem; }
+      .stats { grid-template-columns: 1fr; }
+      .incident-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index_1788859847291.html" class="brand" aria-label="BOT Cable home">
+      <img src="./logo_1788859847289.png" alt="BOT Cable logo">
+      <span><strong>BOT Cable</strong><small>Incident board</small></span>
+    </a>
+    <div class="nav-actions">
+      <a href="index_1788859847291.html" class="nav-link">Cases</a>
+      <a href="dashboard_1788859847290.html" class="nav-link">Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">SERVICE INCIDENTS</div>
+        <h1>Known issues, clear workarounds.</h1>
+        <p>Keep active incidents visible so every case gets a consistent answer.</p>
+      </div>
+      <button id="addIncident" class="primary" type="button">＋ Add incident</button>
+    </section>
+
+    <section class="stats" aria-label="Incident summary">
+      <div class="stat"><div class="stat-label">Total incidents</div><div id="totalCount" class="stat-value">0</div></div>
+      <div class="stat"><div class="stat-label">Visible incidents</div><div id="visibleCount" class="stat-value">0</div></div>
+      <div class="stat"><div class="stat-label">Categories covered</div><div id="categoryCount" class="stat-value">0</div></div>
+    </section>
+
+    <section class="toolbar" aria-label="Incident filters">
+      <label class="search-wrap">
+        <span aria-hidden="true">⌕</span>
+        <span class="sr-only">Search incidents</span>
+        <input id="search" class="search" type="search" placeholder="Search incident titles or workarounds…">
+      </label>
+      <label>
+        <span class="sr-only">Filter by category</span>
+        <select id="categoryFilter" class="select">
+          <option value="all">All categories</option>
+          <option value="TV">TV</option>
+          <option value="Internet">Internet</option>
+          <option value="Fixed phone">Fixed phone</option>
+          <option value="App">App</option>
+        </select>
+      </label>
+    </section>
+
+    <section id="incidentGrid" class="incident-grid" aria-live="polite"></section>
+  </main>
+
+  <dialog id="incidentDialog" aria-labelledby="dialogTitle">
+    <form id="incidentForm" class="dialog-inner" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">INCIDENT DETAILS</div>
+          <h2 id="dialogTitle">Add incident</h2>
+        </div>
+        <button id="closeDialog" class="icon-button" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <div class="field-group">
+        <label for="incidentCategory">Category</label>
+        <select id="incidentCategory" class="select" required>
+          <option value="TV">TV</option>
+          <option value="Internet">Internet</option>
+          <option value="Fixed phone">Fixed phone</option>
+          <option value="App">App</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="incidentTitle">Incident title</label>
+        <input id="incidentTitle" class="field" type="text" maxlength="100" placeholder="For example: TV channels unavailable" required>
+      </div>
+      <div class="field-group">
+        <label for="incidentDescription">Description / workaround</label>
+        <textarea id="incidentDescription" class="form-textarea" maxlength="3000" placeholder="Describe the issue and the workaround agents should share…"></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button id="cancelDialog" class="button cancel" type="button">Cancel</button>
+        <button class="primary" type="submit">Save incident</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "incidents_v1";
+      const categories = ["TV", "Internet", "Fixed phone", "App"];
+      const els = {
+        grid: document.getElementById("incidentGrid"),
+        search: document.getElementById("search"),
+        filter: document.getElementById("categoryFilter"),
+        add: document.getElementById("addIncident"),
+        dialog: document.getElementById("incidentDialog"),
+        form: document.getElementById("incidentForm"),
+        dialogTitle: document.getElementById("dialogTitle"),
+        category: document.getElementById("incidentCategory"),
+        title: document.getElementById("incidentTitle"),
+        description: document.getElementById("incidentDescription"),
+        close: document.getElementById("closeDialog"),
+        cancel: document.getElementById("cancelDialog"),
+        total: document.getElementById("totalCount"),
+        visible: document.getElementById("visibleCount"),
+        categoryCount: document.getElementById("categoryCount"),
+      };
+      let incidents = readIncidents();
+      let editingId = null;
+
+      function makeId() {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+      function readIncidents() {
+        try {
+          const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          return Array.isArray(stored) ? stored : [];
+        } catch {
+          return [];
+        }
+      }
+      function saveIncidents() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(incidents));
+      }
+      function categoryClass(category) {
+        return category === "TV" ? "tv" : category === "Fixed phone" ? "phone" : category === "App" ? "app" : "";
+      }
+      function escapeText(value) {
+        return String(value || "");
+      }
+      function formatDate(value) {
+        if (!value) return "Recently added";
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "Recently added" : `Updated ${date.toLocaleDateString()}`;
+      }
+      function createButton(label, title, handler, className = "icon-button") {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.title = title;
+        button.setAttribute("aria-label", title);
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          handler();
+        });
+        return button;
+      }
+      function render() {
+        const query = els.search.value.trim().toLowerCase();
+        const selectedCategory = els.filter.value;
+        const visible = incidents.filter((incident) => {
+          const matchesCategory = selectedCategory === "all" || incident.category === selectedCategory;
+          const haystack = `${incident.title} ${incident.description}`.toLowerCase();
+          return matchesCategory && (!query || haystack.includes(query));
+        });
+        els.total.textContent = incidents.length;
+        els.visible.textContent = visible.length;
+        els.categoryCount.textContent = new Set(incidents.map((incident) => incident.category)).size;
+        els.grid.innerHTML = "";
+
+        if (!visible.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          const heading = document.createElement("strong");
+          heading.textContent = incidents.length ? "No matching incidents" : "No incidents yet";
+          const message = document.createElement("span");
+          message.textContent = incidents.length ? "Try another search or category." : "Add the first known issue and its workaround.";
+          empty.append(heading, message);
+          els.grid.appendChild(empty);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        visible.forEach((incident) => {
+          const card = document.createElement("details");
+          card.className = "incident-card";
+          const summary = document.createElement("summary");
+          summary.className = "incident-summary";
+          const heading = document.createElement("div");
+          const title = document.createElement("strong");
+          title.className = "incident-title";
+          title.textContent = escapeText(incident.title);
+          const badge = document.createElement("span");
+          badge.className = `category ${categoryClass(incident.category)}`;
+          badge.textContent = escapeText(incident.category);
+          heading.append(title, badge);
+          summary.appendChild(heading);
+
+          const description = document.createElement("div");
+          description.className = "description";
+          const paragraph = document.createElement("p");
+          paragraph.textContent = escapeText(incident.description) || "No workaround added yet.";
+          description.appendChild(paragraph);
+
+          const footer = document.createElement("div");
+          footer.className = "incident-footer";
+          const date = document.createElement("span");
+          date.textContent = formatDate(incident.updatedAt || incident.createdAt);
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+          actions.append(
+            createButton("✎", "Edit incident", () => openDialog(incident)),
+            createButton("🗑", "Delete incident", () => deleteIncident(incident.id), "icon-button danger"),
+          );
+          footer.append(date, actions);
+          card.append(summary, description, footer);
+          fragment.appendChild(card);
+        });
+        els.grid.appendChild(fragment);
+      }
+      function openDialog(incident = null) {
+        editingId = incident ? incident.id : null;
+        els.dialogTitle.textContent = incident ? "Edit incident" : "Add incident";
+        els.category.value = incident ? incident.category : "Internet";
+        els.title.value = incident ? incident.title : "";
+        els.description.value = incident ? incident.description : "";
+        if (typeof els.dialog.showModal === "function") els.dialog.showModal();
+        else els.dialog.setAttribute("open", "");
+        requestAnimationFrame(() => els.title.focus());
+      }
+      function closeDialog() {
+        editingId = null;
+        els.form.reset();
+        if (typeof els.dialog.close === "function") els.dialog.close();
+        else els.dialog.removeAttribute("open");
+      }
+      function deleteIncident(id) {
+        const incident = incidents.find((item) => item.id === id);
+        if (!incident || !confirm(`Delete “${incident.title}”? This cannot be undone.`)) return;
+        incidents = incidents.filter((item) => item.id !== id);
+        saveIncidents();
+        render();
+      }
+
+      els.add.addEventListener("click", () => openDialog());
+      els.close.addEventListener("click", closeDialog);
+      els.cancel.addEventListener("click", closeDialog);
+      els.search.addEventListener("input", render);
+      els.filter.addEventListener("change", render);
+      els.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = els.title.value.trim();
+        if (!title) return;
+        const now = new Date().toISOString();
+        if (editingId) {
+          const incident = incidents.find((item) => item.id === editingId);
+          if (incident) Object.assign(incident, {
+            category: els.category.value,
+            title,
+            description: els.description.value.trim(),
+            updatedAt: now,
+          });
+        } else {
+          incidents.unshift({
+            id: makeId(),
+            category: els.category.value,
+            title,
+            description: els.description.value.trim(),
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+        saveIncidents();
+        closeDialog();
+        render();
+      });
+      els.dialog.addEventListener("click", (event) => {
+        if (event.target === els.dialog) closeDialog();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
