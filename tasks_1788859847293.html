@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10233f">
+  <link rel="icon" type="image/png" href="./favicon_1788859847289.png">
+  <title>Daily tasks – BOT Cable</title>
+  <style>
+    :root {
+      --ink: #10233f;
+      --muted: #71809a;
+      --blue: #246bfe;
+      --blue-dark: #1747b5;
+      --line: rgba(16, 35, 63, .12);
+      --shadow: 0 14px 34px rgba(32, 68, 120, .10);
+      --surface: rgba(255, 255, 255, .88);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(36, 107, 254, .11), transparent 28rem),
+        linear-gradient(145deg, #f7faff 0%, #f3f6fb 55%, #edf3ff 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    textarea:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(36, 107, 254, .28);
+      outline-offset: 2px;
+    }
+    .navbar {
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1280px, calc(100% - 32px));
+      min-height: 68px;
+      margin: 14px auto 0;
+      padding: 10px 16px 10px 20px;
+      border: 1px solid rgba(255, 255, 255, .92);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .8);
+      box-shadow: 0 16px 40px rgba(32, 68, 120, .10);
+      backdrop-filter: blur(14px) saturate(160%);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; }
+    .brand img { width: 43px; height: 43px; border-radius: 12px; object-fit: cover; }
+    .brand span { display: grid; gap: 1px; }
+    .brand strong { font-size: 1.12rem; }
+    .brand small { color: var(--muted); font-size: .71rem; letter-spacing: .06em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 7px; }
+    .nav-link, .button, .icon-button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: #31435e;
+      background: rgba(255, 255, 255, .78);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+    .nav-link, .button { padding: .58rem .84rem; font-size: .82rem; }
+    .nav-link:hover, .button:hover, .icon-button:hover {
+      color: var(--blue-dark);
+      background: #eef4ff;
+      border-color: rgba(36, 107, 254, .25);
+      transform: translateY(-1px);
+    }
+    .page { width: min(1280px, calc(100% - 40px)); margin: 0 auto; padding: 38px 0 60px; }
+    .hero { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .eyebrow { color: var(--blue); font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 7px 0; font-size: clamp(1.9rem, 4vw, 2.7rem); letter-spacing: -.045em; line-height: 1.08; }
+    .hero p { margin: 0; color: #667793; }
+    .primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--blue);
+      border-radius: 11px;
+      padding: 11px 15px;
+      color: white;
+      background: linear-gradient(135deg, #3177ff, #2059dd);
+      box-shadow: 0 8px 18px rgba(36, 107, 254, .20);
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .primary:hover { filter: brightness(1.04); transform: translateY(-1px); }
+    .daybar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 13px 15px;
+      border: 1px solid rgba(16, 35, 63, .08);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, .74);
+      box-shadow: 0 8px 22px rgba(32, 68, 120, .06);
+    }
+    .day-controls { display: flex; align-items: center; gap: 8px; }
+    .day-controls input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--ink); }
+    .day-label { min-width: 142px; font-weight: 750; }
+    .day-subtitle { display: block; margin-top: 2px; color: var(--muted); font-size: .74rem; font-weight: 400; }
+    .summary { display: flex; align-items: center; gap: 18px; color: #667793; font-size: .8rem; }
+    .summary strong { color: var(--ink); }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(245px, 1fr));
+      align-items: start;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 2px 2px 14px;
+    }
+    .column {
+      min-height: 260px;
+      padding: 11px;
+      border: 1px solid rgba(16, 35, 63, .08);
+      border-radius: 16px;
+      background: rgba(235, 241, 250, .72);
+      transition: background .16s ease, border-color .16s ease;
+    }
+    .column.drag-over { border-color: rgba(36, 107, 254, .48); background: #e6efff; }
+    .column-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 4px 11px; }
+    .column-title { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 800; }
+    .column-title::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--column-color); }
+    .column[data-status="todo"] { --column-color: #6380a8; }
+    .column[data-status="progress"] { --column-color: #246bfe; }
+    .column[data-status="waiting"] { --column-color: #df9b27; }
+    .column[data-status="done"] { --column-color: #26966e; }
+    .column-count { display: grid; place-items: center; min-width: 23px; height: 23px; border-radius: 8px; color: #61728c; background: rgba(255,255,255,.8); font-size: .72rem; font-weight: 700; }
+    .task-list { display: grid; gap: 9px; min-height: 195px; }
+    .task-card {
+      padding: 13px;
+      border: 1px solid rgba(16, 35, 63, .09);
+      border-radius: 12px;
+      background: var(--surface);
+      box-shadow: 0 5px 15px rgba(32, 68, 120, .06);
+      cursor: grab;
+      transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+    }
+    .task-card:hover { transform: translateY(-1px); box-shadow: 0 9px 18px rgba(32, 68, 120, .10); }
+    .task-card:active { cursor: grabbing; }
+    .task-card.dragging { opacity: .42; transform: rotate(1deg); }
+    .task-card.overdue { border-left: 3px solid #dc4b4b; }
+    .task-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .task-title { margin: 0; color: var(--ink); font-size: .9rem; line-height: 1.4; overflow-wrap: anywhere; }
+    .task-description { margin: 8px 0 0; color: #667793; font-size: .78rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .task-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 7px;
+      border-radius: 99px;
+      color: #31527e;
+      background: #eaf1ff;
+      font-size: .65rem;
+      font-weight: 700;
+    }
+    .badge.priority-high { color: #a33c29; background: #ffebe5; }
+    .badge.priority-urgent { color: #a32136; background: #ffe3e9; }
+    .badge.priority-low { color: #557260; background: #e7f4eb; }
+    .badge.source { color: #55657e; background: #edf0f5; }
+    .task-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 11px; color: var(--muted); font-size: .68rem; }
+    .task-controls { display: flex; align-items: center; gap: 5px; }
+    .task-status {
+      max-width: 104px;
+      padding: 4px 5px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: #52647e;
+      background: #fff;
+      font-size: .67rem;
+    }
+    .icon-button { padding: 4px 7px; font-size: .75rem; }
+    .icon-button.danger:hover { color: #c53030; background: #fff5f5; border-color: rgba(197, 48, 48, .25); }
+    .empty-column { padding: 22px 7px; color: #8b98ab; font-size: .75rem; text-align: center; }
+    dialog {
+      width: min(580px, calc(100% - 28px));
+      padding: 0;
+      border: 0;
+      border-radius: 18px;
+      color: var(--ink);
+      background: #f8fbff;
+      box-shadow: 0 24px 80px rgba(15, 35, 70, .28);
+    }
+    dialog::backdrop { background: rgba(16, 35, 63, .42); backdrop-filter: blur(3px); }
+    .dialog-inner { padding: 22px; }
+    .dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+    .dialog-heading h2 { margin: 3px 0 0; font-size: 1.25rem; }
+    .field-group { display: grid; gap: 7px; margin-bottom: 14px; }
+    .field-group label { color: #4d607c; font-size: .8rem; font-weight: 700; }
+    .field, .textarea, .select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 900px) {
+      .navbar { position: static; width: calc(100% - 20px); }
+      .page { width: calc(100% - 24px); padding-top: 30px; }
+      .board { grid-template-columns: repeat(4, minmax(260px, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .brand small { display: none; }
+      .brand img { width: 36px; height: 36px; }
+      .brand strong { font-size: 1rem; }
+      .nav-links { gap: 4px; }
+      .nav-link { padding: 7px; font-size: .72rem; }
+      .hero { display: block; }
+      .hero .primary { width: 100%; margin-top: 18px; }
+      .daybar { align-items: flex-start; flex-direction: column; }
+      .summary { gap: 11px; }
+      .form-grid { grid-template-columns: 1fr; gap: 0; }
+    }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index_1788859847291.html" class="brand" aria-label="BOT Cable home">
+      <img src="./logo_1788859847289.png" alt="BOT Cable logo">
+      <span><strong>BOT Cable</strong><small>Daily work board</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="index_1788859847291.html" class="nav-link">Cases</a>
+      <a href="incident_1788859847292.html" class="nav-link">Incidents</a>
+      <a href="dashboard_1788859847290.html" class="nav-link">Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">DAILY TASKS</div>
+        <h1>Move today’s work forward.</h1>
+        <p>Plan follow-ups for customer cases and service incidents, then move cards through the day.</p>
+      </div>
+      <button id="addTask" class="primary" type="button">＋ Add task</button>
+    </section>
+
+    <section class="daybar" aria-label="Choose a work day">
+      <div class="day-controls">
+        <button id="previousDay" class="button" type="button" aria-label="Previous day">←</button>
+        <div class="day-label">
+          <span id="dayLabel">Today</span>
+          <span id="daySubtitle" class="day-subtitle"></span>
+        </div>
+        <button id="nextDay" class="button" type="button" aria-label="Next day">→</button>
+        <button id="todayButton" class="button" type="button">Today</button>
+        <label class="sr-only" for="dayPicker">Choose date</label>
+        <input id="dayPicker" type="date">
+      </div>
+      <div class="summary">
+        <span><strong id="dayTaskCount">0</strong> tasks</span>
+        <span><strong id="dayDoneCount">0</strong> done</span>
+      </div>
+    </section>
+
+    <section id="board" class="board" aria-label="Task board"></section>
+  </main>
+
+  <dialog id="taskDialog" aria-labelledby="dialogTitle">
+    <form id="taskForm" class="dialog-inner">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">TASK DETAILS</div>
+          <h2 id="dialogTitle">Add task</h2>
+        </div>
+        <button id="closeDialog" class="icon-button" type="button" aria-label="Close dialog">×</button>
+      </div>
+      <div class="field-group">
+        <label for="taskTitle">Task title</label>
+        <input id="taskTitle" class="field" type="text" maxlength="120" placeholder="For example: Call customer with update" required>
+      </div>
+      <div class="field-group">
+        <label for="taskDescription">Details</label>
+        <textarea id="taskDescription" class="textarea" maxlength="2000" placeholder="Add a reminder, next step, or useful context…"></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="taskSource">Related case or incident</label>
+          <select id="taskSource" class="select">
+            <option value="">No linked case or incident</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="taskPriority">Priority</label>
+          <select id="taskPriority" class="select">
+            <option value="Normal">Normal</option>
+            <option value="Low">Low</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="taskDate">Work day</label>
+          <input id="taskDate" class="field" type="date" required>
+        </div>
+        <div class="field-group">
+          <label for="taskStatus">Status</label>
+          <select id="taskStatus" class="select">
+            <option value="todo">To do</option>
+            <option value="progress">In progress</option>
+            <option value="waiting">Waiting</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button id="cancelDialog" class="button" type="button">Cancel</button>
+        <button class="primary" type="submit">Save task</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+      const TASKS_KEY = "daily_tasks_v1";
+      const DISMISSED_DOLLAR_TASKS_KEY = "dismissed_dollar_tasks_v1";
+      const CASES_KEY = "notes_v1";
+      const INCIDENTS_KEY = "incidents_v1";
+      const columns = [
+        { id: "todo", label: "To do" },
+        { id: "progress", label: "In progress" },
+        { id: "waiting", label: "Waiting" },
+        { id: "done", label: "Done" },
+      ];
+      const els = {
+        board: document.getElementById("board"),
+        add: document.getElementById("addTask"),
+        dialog: document.getElementById("taskDialog"),
+        form: document.getElementById("taskForm"),
+        dialogTitle: document.getElementById("dialogTitle"),
+        title: document.getElementById("taskTitle"),
+        description: document.getElementById("taskDescription"),
+        source: document.getElementById("taskSource"),
+        priority: document.getElementById("taskPriority"),
+        date: document.getElementById("taskDate"),
+        status: document.getElementById("taskStatus"),
+        close: document.getElementById("closeDialog"),
+        cancel: document.getElementById("cancelDialog"),
+        dayPicker: document.getElementById("dayPicker"),
+        dayLabel: document.getElementById("dayLabel"),
+        daySubtitle: document.getElementById("daySubtitle"),
+        taskCount: document.getElementById("dayTaskCount"),
+        doneCount: document.getElementById("dayDoneCount"),
+      };
+      let tasks = readArray(TASKS_KEY);
+      let editingId = null;
+      let selectedDate = localDateKey(new Date());
+      let draggedTaskId = null;
+
+      function readArray(key) {
+        try {
+          const value = JSON.parse(localStorage.getItem(key));
+          return Array.isArray(value) ? value : [];
+        } catch {
+          return [];
+        }
+      }
+      function saveTasks() {
+        try {
+          localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+          return true;
+        } catch (error) {
+          alert("Could not save tasks in this browser. Storage may be full or disabled.");
+          return false;
+        }
+      }
+      function localDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+      function makeId() {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+      function safeText(value) {
+        return String(value == null ? "" : value);
+      }
+      function formatDay(dateKey) {
+        const [year, month, day] = dateKey.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+      }
+      function shiftDay(offset) {
+        const [year, month, day] = selectedDate.split("-").map(Number);
+        const date = new Date(year, month - 1, day + offset);
+        selectedDate = localDateKey(date);
+        render();
+      }
+      function createButton(label, title, handler, className = "icon-button") {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.title = title;
+        button.setAttribute("aria-label", title);
+        button.addEventListener("click", handler);
+        return button;
+      }
+      function loadSources() {
+        const cases = readArray(CASES_KEY).map((item) => ({
+          type: "case",
+          id: String(item.id),
+          label: `Case · ${item.title || "Untitled"}${item.cc ? ` · ${item.cc}` : ""}`,
+          title: item.title || "Case follow-up",
+          description: String(item.rawContent || "").slice(0, 180),
+        }));
+        const incidents = readArray(INCIDENTS_KEY).map((item) => ({
+          type: "incident",
+          id: String(item.id),
+          label: `Incident · ${item.category || "Other"} · ${item.title || "Untitled"}`,
+          title: item.title || "Incident follow-up",
+          description: String(item.description || "").slice(0, 180),
+        }));
+        return [...cases, ...incidents];
+      }
+      function refreshSourceOptions(selected = "") {
+        const sources = loadSources();
+        els.source.replaceChildren(new Option("No linked case or incident", ""));
+        sources.forEach((source) => {
+          const option = new Option(source.label, `${source.type}:${source.id}`);
+          option.dataset.type = source.type;
+          option.dataset.id = source.id;
+          option.dataset.title = source.title;
+          option.dataset.description = source.description;
+          els.source.add(option);
+        });
+        if (selected && !Array.from(els.source.options).some((option) => option.value === selected)) {
+          const missing = new Option("Linked record no longer available", selected);
+          els.source.add(missing);
+        }
+        els.source.value = selected;
+      }
+      function openDialog(task = null) {
+        editingId = task ? task.id : null;
+        els.dialogTitle.textContent = task ? "Edit task" : "Add task";
+        els.title.value = task ? task.title : "";
+        els.description.value = task ? task.description || "" : "";
+        els.priority.value = task ? task.priority || "Normal" : "Normal";
+        els.date.value = task ? task.date : selectedDate;
+        els.status.value = task ? task.status || "todo" : "todo";
+        const selectedSource = task && task.sourceType && task.sourceId
+          ? `${task.sourceType}:${task.sourceId}`
+          : "";
+        refreshSourceOptions(selectedSource);
+        if (typeof els.dialog.showModal === "function") els.dialog.showModal();
+        else els.dialog.setAttribute("open", "");
+        requestAnimationFrame(() => els.title.focus());
+      }
+      function closeDialog() {
+        editingId = null;
+        els.form.reset();
+        if (typeof els.dialog.close === "function") els.dialog.close();
+        else els.dialog.removeAttribute("open");
+      }
+      function updateTaskStatus(id, status) {
+        const task = tasks.find((item) => String(item.id) === String(id));
+        if (!task || !columns.some((column) => column.id === status)) return;
+        task.status = status;
+        task.updatedAt = new Date().toISOString();
+        saveTasks();
+        render();
+      }
+      function deleteTask(id) {
+        const task = tasks.find((item) => String(item.id) === String(id));
+        if (!task || !confirm(`Delete “${task.title}”? This cannot be undone.`)) return;
+        tasks = tasks.filter((item) => String(item.id) !== String(id));
+        saveTasks();
+        if (task.autoGenerated === "auto-dollar-case" && task.sourceId != null) {
+          try {
+            const dismissed = readArray(DISMISSED_DOLLAR_TASKS_KEY).map(String);
+            const sourceId = String(task.sourceId);
+            if (!dismissed.includes(sourceId)) {
+              dismissed.push(sourceId);
+              localStorage.setItem(DISMISSED_DOLLAR_TASKS_KEY, JSON.stringify(dismissed));
+            }
+          } catch (error) {
+            console.warn("Could not save the dismissed task preference.", error);
+          }
+        }
+        render();
+      }
+      function renderCard(task) {
+        const card = document.createElement("article");
+        card.className = "task-card";
+        card.draggable = true;
+        card.dataset.taskId = String(task.id);
+        if (task.status !== "done" && task.date < localDateKey(new Date())) card.classList.add("overdue");
+        card.addEventListener("dragstart", (event) => {
+          draggedTaskId = String(task.id);
+          card.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", draggedTaskId);
+        });
+        card.addEventListener("dragend", () => {
+          draggedTaskId = null;
+          card.classList.remove("dragging");
+          document.querySelectorAll(".column.drag-over").forEach((column) => column.classList.remove("drag-over"));
+        });
+
+        const top = document.createElement("div");
+        top.className = "task-top";
+        const title = document.createElement("h3");
+        title.className = "task-title";
+        title.textContent = safeText(task.title);
+        top.appendChild(title);
+        top.appendChild(createButton("✎", "Edit task", () => openDialog(task)));
+        card.appendChild(top);
+
+        if (task.description) {
+          const description = document.createElement("p");
+          description.className = "task-description";
+          description.textContent = safeText(task.description);
+          card.appendChild(description);
+        }
+        const badges = document.createElement("div");
+        badges.className = "task-badges";
+        const priority = document.createElement("span");
+        const priorityValue = task.priority || "Normal";
+        priority.className = `badge priority-${priorityValue.toLowerCase()}`;
+        priority.textContent = `${priorityValue} priority`;
+        badges.appendChild(priority);
+        if (task.sourceType) {
+          const source = document.createElement("span");
+          source.className = "badge source";
+          source.textContent = task.sourceLabel || (task.sourceType === "case" ? "Linked case" : "Linked incident");
+          badges.appendChild(source);
+        }
+        card.appendChild(badges);
+
+        const meta = document.createElement("div");
+        meta.className = "task-meta";
+        const date = document.createElement("span");
+        date.textContent = task.date === localDateKey(new Date()) ? "Due today" : formatDay(task.date);
+        const controls = document.createElement("div");
+        controls.className = "task-controls";
+        const statusSelect = document.createElement("select");
+        statusSelect.className = "task-status";
+        statusSelect.setAttribute("aria-label", `Move ${task.title}`);
+        columns.forEach((column) => statusSelect.add(new Option(column.label, column.id)));
+        statusSelect.value = task.status || "todo";
+        statusSelect.addEventListener("change", () => updateTaskStatus(task.id, statusSelect.value));
+        const remove = createButton("×", "Delete task", () => deleteTask(task.id), "icon-button danger");
+        controls.append(statusSelect, remove);
+        meta.append(date, controls);
+        card.appendChild(meta);
+        return card;
+      }
+      function render() {
+        els.dayPicker.value = selectedDate;
+        const today = localDateKey(new Date());
+        els.dayLabel.textContent = selectedDate === today ? "Today" : formatDay(selectedDate);
+        els.daySubtitle.textContent = selectedDate === today ? formatDay(selectedDate) : "";
+        const dayTasks = tasks.filter((task) => task.date === selectedDate);
+        els.taskCount.textContent = dayTasks.length;
+        els.doneCount.textContent = dayTasks.filter((task) => task.status === "done").length;
+        els.board.replaceChildren();
+
+        columns.forEach((columnInfo) => {
+          const column = document.createElement("section");
+          column.className = "column";
+          column.dataset.status = columnInfo.id;
+          column.setAttribute("aria-label", `${columnInfo.label} tasks`);
+          column.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            column.classList.add("drag-over");
+          });
+          column.addEventListener("dragleave", (event) => {
+            if (!column.contains(event.relatedTarget)) column.classList.remove("drag-over");
+          });
+          column.addEventListener("drop", (event) => {
+            event.preventDefault();
+            column.classList.remove("drag-over");
+            const id = event.dataTransfer.getData("text/plain") || draggedTaskId;
+            if (id) updateTaskStatus(id, columnInfo.id);
+          });
+
+          const header = document.createElement("div");
+          header.className = "column-header";
+          const label = document.createElement("div");
+          label.className = "column-title";
+          label.textContent = columnInfo.label;
+          const count = document.createElement("span");
+          count.className = "column-count";
+          const columnTasks = dayTasks.filter((task) => (task.status || "todo") === columnInfo.id);
+          count.textContent = columnTasks.length;
+          header.append(label, count);
+          const list = document.createElement("div");
+          list.className = "task-list";
+          if (!columnTasks.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty-column";
+            empty.textContent = "Drop a card here or add a task";
+            list.appendChild(empty);
+          } else {
+            columnTasks.forEach((task) => list.appendChild(renderCard(task)));
+          }
+          column.append(header, list);
+          els.board.appendChild(column);
+        });
+      }
+
+      els.add.addEventListener("click", () => openDialog());
+      els.close.addEventListener("click", closeDialog);
+      els.cancel.addEventListener("click", closeDialog);
+      document.getElementById("previousDay").addEventListener("click", () => shiftDay(-1));
+      document.getElementById("nextDay").addEventListener("click", () => shiftDay(1));
+      document.getElementById("todayButton").addEventListener("click", () => {
+        selectedDate = localDateKey(new Date());
+        render();
+      });
+      els.dayPicker.addEventListener("change", () => {
+        if (els.dayPicker.value) {
+          selectedDate = els.dayPicker.value;
+          render();
+        }
+      });
+      els.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = els.title.value.trim();
+        if (!title || !els.date.value) return;
+        const selected = els.source.selectedOptions[0];
+        const sourceType = selected && selected.dataset.type ? selected.dataset.type : "";
+        const sourceId = selected && selected.dataset.id ? selected.dataset.id : "";
+        const sourceLabel = selected && selected.dataset.title
+          ? `${sourceType === "case" ? "Case" : "Incident"} · ${selected.dataset.title}`
+          : "";
+        const now = new Date().toISOString();
+
+        if (editingId) {
+          const task = tasks.find((item) => String(item.id) === String(editingId));
+          if (task) Object.assign(task, {
+            title,
+            description: els.description.value.trim(),
+            priority: els.priority.value,
+            date: els.date.value,
+            status: els.status.value,
+            sourceType,
+            sourceId,
+            sourceLabel,
+            updatedAt: now,
+          });
+        } else {
+          tasks.unshift({
+            id: makeId(),
+            title,
+            description: els.description.value.trim(),
+            priority: els.priority.value,
+            date: els.date.value,
+            status: els.status.value,
+            sourceType,
+            sourceId,
+            sourceLabel,
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+        if (saveTasks()) {
+          selectedDate = els.date.value;
+          closeDialog();
+          render();
+        }
+      });
+      els.source.addEventListener("change", () => {
+        if (!els.title.value.trim()) {
+          const option = els.source.selectedOptions[0];
+          if (option && option.dataset.title) els.title.value = `Follow up: ${option.dataset.title}`;
+        }
+        if (!els.description.value.trim()) {
+          const option = els.source.selectedOptions[0];
+          if (option && option.dataset.description) els.description.value = option.dataset.description;
+        }
+      });
+      els.dialog.addEventListener("click", (event) => {
+        if (event.target === els.dialog) closeDialog();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

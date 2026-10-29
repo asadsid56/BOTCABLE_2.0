@@ -21,9 +21,11 @@
     </a>
   </div>
   <div class="nav-right">
+    <button id="openEmailTemplates" class="glass-button secondary-button email-template-trigger" type="button">✉ Email templates</button>
     <button id="manageTitles" class="glass-button secondary-button" type="button">⚙ Titles</button>
     <button id="exportBtn" class="glass-button secondary-button" type="button">Export</button>
     <button id="importBtn" class="glass-button secondary-button" type="button">Import</button>
+    <a href="tasks_1788859847293.html" class="glass-link">Daily tasks</a>
     <a href="incident_1788859847292.html" class="glass-link">Incidents</a>
     <input type="file" id="importFile" accept="application/json" hidden />
     <a href="dashboard_1788859847290.html" class="glass-link">Dashboard</a>
@@ -94,6 +96,45 @@
   </div>
 
 
+
+  <dialog id="emailTemplatePanel" class="email-template-panel" aria-labelledby="emailPanelTitle">
+    <div class="email-panel-shell">
+      <div class="email-panel-header">
+        <div>
+          <div class="eyebrow">QUICK REPLIES</div>
+          <h2 id="emailPanelTitle">Email templates</h2>
+          <p>Save, edit, and copy messages you send often.</p>
+        </div>
+        <button id="closeEmailTemplates" class="iconbtn close-button" type="button" aria-label="Close email templates">×</button>
+      </div>
+
+      <div class="email-panel-actions">
+        <label class="email-template-search">
+          <span aria-hidden="true">⌕</span>
+          <input id="emailTemplateSearch" type="search" placeholder="Find a template…" aria-label="Search email templates">
+        </label>
+        <button id="addEmailTemplate" class="primary-button" type="button">＋ New</button>
+      </div>
+
+      <div id="emailTemplateFeedback" class="email-template-feedback" role="status" aria-live="polite" hidden></div>
+      <form id="emailTemplateForm" class="email-template-form" autocomplete="off" hidden>
+        <div class="email-form-heading">
+          <h3 id="emailFormTitle">New email template</h3>
+          <button id="cancelEmailTemplate" class="text-button" type="button">Cancel</button>
+        </div>
+        <label for="emailTemplateName">Template name</label>
+        <input id="emailTemplateName" type="text" maxlength="70" placeholder="e.g. Appointment confirmation" required>
+        <label for="emailTemplateSubject">Email subject</label>
+        <input id="emailTemplateSubject" type="text" maxlength="140" placeholder="Subject line">
+        <label for="emailTemplateBody">Email message</label>
+        <textarea id="emailTemplateBody" rows="7" maxlength="5000" placeholder="Write the message you want to reuse…" required></textarea>
+        <button id="saveEmailTemplate" class="primary-button" type="submit">Save template</button>
+      </form>
+
+      <div id="emailTemplateList" class="email-template-list" aria-live="polite"></div>
+      <div class="email-panel-footnote">Templates are saved in this browser only.</div>
+    </div>
+  </dialog>
 
 <!-- Your notes JS remains the same as before -->
  <script src="app_1788859847289.js"></script>
