@@ -227,13 +227,166 @@
       .form-grid { grid-template-columns: 1fr; gap: 0; }
     }
     [hidden] { display: none !important; }
+    .day-controls { flex-wrap: wrap; }
+    .task-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+      padding: 12px;
+      border: 1px solid rgba(16, 35, 63, .08);
+      border-radius: 14px;
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 8px 22px rgba(32,68,120,.05);
+    }
+    .task-search {
+      flex: 1;
+      min-width: 190px;
+      max-width: 390px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .task-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+    .task-filter {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: #53647d;
+      background: #fff;
+      cursor: pointer;
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .task-filter[aria-pressed="true"] { border-color: rgba(36,107,254,.34); color: var(--blue-dark); background: #edf4ff; }
+    .button[aria-pressed="true"] { border-color: rgba(36,107,254,.34); color: var(--blue-dark); background: #edf4ff; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid rgba(16,35,63,.09);
+      border-radius: 15px;
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+    }
+    .task-table { width: 100%; min-width: 850px; border-collapse: separate; border-spacing: 0; }
+    .task-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 12px 13px;
+      color: #65758e;
+      background: #f4f7fc;
+      border-bottom: 1px solid var(--line);
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-align: left;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .task-table td { padding: 11px 13px; border-bottom: 1px solid rgba(16,35,63,.07); vertical-align: top; }
+    .task-table tbody tr:last-child > td { border-bottom: 0; }
+    .task-row:hover > td { background: #fbfdff; }
+    .task-name { min-width: 255px; }
+    .task-name details > summary {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: .84rem;
+      font-weight: 750;
+      line-height: 1.45;
+      list-style: none;
+      overflow-wrap: anywhere;
+    }
+    .task-name details > summary::-webkit-details-marker { display: none; }
+    .task-name details > summary::before { content: "›"; flex: 0 0 auto; color: #7d8ba2; font-size: 1.1rem; line-height: 1.15; transition: transform .15s ease; }
+    .task-name details[open] > summary::before { transform: rotate(90deg); }
+    .dollar-badge {
+      display: inline-flex;
+      margin: 5px 0 0 18px;
+      padding: 3px 7px;
+      border-radius: 20px;
+      color: #a2451f;
+      background: #fff0e6;
+      font-size: .65rem;
+      font-weight: 800;
+    }
+    .task-details {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 2px 18px;
+      padding: 11px;
+      border-left: 2px solid #c7d8f7;
+      border-radius: 0 9px 9px 0;
+      color: #5e6f88;
+      background: #f7f9fd;
+      font-size: .75rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+    .detail-label { color: #344762; font-size: .68rem; font-weight: 800; }
+    .copy-text-button {
+      justify-self: start;
+      padding: 6px 8px;
+      border: 1px solid rgba(36,107,254,.2);
+      border-radius: 7px;
+      color: var(--blue-dark);
+      background: #fff;
+      cursor: pointer;
+      font-size: .7rem;
+      font-weight: 750;
+    }
+    .related-text { max-width: 220px; color: #566983; font-size: .75rem; line-height: 1.4; overflow-wrap: anywhere; }
+    .source-type { display: block; margin-top: 3px; color: #8a97aa; font-size: .67rem; }
+    .table-select {
+      max-width: 125px;
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #405471;
+      background: #fff;
+      font-size: .72rem;
+    }
+    .task-priority { color: #53647d; font-size: .74rem; white-space: nowrap; }
+    .task-priority.priority-urgent, .task-priority.priority-high { color: #b44537; font-weight: 750; }
+    .task-priority.priority-low { color: #43805e; }
+    .row-actions { display: flex; gap: 5px; white-space: nowrap; }
+    .row-action {
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #4e607a;
+      background: #fff;
+      cursor: pointer;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+    .row-action:hover { color: var(--blue-dark); border-color: rgba(36,107,254,.25); background: #f1f6ff; }
+    .row-action.delete:hover { color: #bd3333; border-color: rgba(189,51,51,.24); background: #fff5f5; }
+    .table-empty { padding: 36px 16px !important; color: #77869d; text-align: center; }
+    #board { display: none !important; }
+    @media (max-width: 720px) {
+      .task-toolbar { align-items: stretch; flex-direction: column; }
+      .task-search { width: 100%; max-width: none; }
+      .day-controls { gap: 6px; }
+      .day-label { min-width: 115px; }
+    }
+    @media (max-width: 560px) {
+      .task-filters { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .task-filter { padding: 8px 5px; font-size: .68rem; }
+    }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <a href="index_1788859847291.html" class="brand" aria-label="BOT Cable home">
       <img src="./logo_1788859847289.png" alt="BOT Cable logo">
-      <span><strong>BOT Cable</strong><small>Daily work board</small></span>
+       <span><strong>BOT Cable</strong><small>Daily task list</small></span>
     </a>
     <div class="nav-links">
       <a href="index_1788859847291.html" class="nav-link">Cases</a>
@@ -245,9 +398,9 @@
   <main class="page">
     <section class="hero">
       <div>
-        <div class="eyebrow">DAILY TASKS</div>
-        <h1>Move today’s work forward.</h1>
-        <p>Plan follow-ups for customer cases and service incidents, then move cards through the day.</p>
+         <div class="eyebrow">DAILY TASKS</div>
+         <h1>One clear list for every follow-up.</h1>
+         <p>Expand a row for the details, copy case text, and update or remove tasks without leaving the list.</p>
       </div>
       <button id="addTask" class="primary" type="button">＋ Add task</button>
     </section>
@@ -261,6 +414,7 @@
         </div>
         <button id="nextDay" class="button" type="button" aria-label="Next day">→</button>
         <button id="todayButton" class="button" type="button">Today</button>
+         <button id="allTasksButton" class="button" type="button" aria-pressed="true">All dates</button>
         <label class="sr-only" for="dayPicker">Choose date</label>
         <input id="dayPicker" type="date">
       </div>
@@ -270,7 +424,22 @@
       </div>
     </section>
 
-    <section id="board" class="board" aria-label="Task board"></section>
+     <section class="task-toolbar" aria-label="Find tasks">
+       <label class="sr-only" for="taskSearch">Search tasks and case content</label>
+       <input id="taskSearch" class="task-search" type="search" placeholder="Search tasks, cases, or text…">
+       <div class="task-filters" role="group" aria-label="Filter task list">
+         <button class="task-filter" type="button" data-filter="all" aria-pressed="true">All tasks</button>
+         <button class="task-filter" type="button" data-filter="dollar" aria-pressed="false">$ cases</button>
+         <button class="task-filter" type="button" data-filter="active" aria-pressed="false">Open tasks</button>
+       </div>
+     </section>
+     <div class="table-wrap">
+       <table class="task-table" aria-label="Tasks and linked cases">
+         <thead><tr><th scope="col">Task / details</th><th scope="col">Related record</th><th scope="col">Status</th><th scope="col">Due</th><th scope="col">Priority</th><th scope="col">Actions</th></tr></thead>
+         <tbody id="taskTableBody"></tbody>
+       </table>
+     </div>
+     <section id="board" class="board" aria-label="Task board"></section>
   </main>
 
   <dialog id="taskDialog" aria-labelledby="dialogTitle">
@@ -329,7 +498,7 @@
     </form>
   </dialog>
 
-  <script>
+  <script type="text/plain" id="legacyTaskBoardScript">
     (() => {
       "use strict";
       const TASKS_KEY = "daily_tasks_v1";
@@ -640,6 +809,7 @@
         event.preventDefault();
         const title = els.title.value.trim();
         if (!title || !els.date.value) return;
+        const wasEditing = Boolean(editingId);
         const selected = els.source.selectedOptions[0];
         const sourceType = selected && selected.dataset.type ? selected.dataset.type : "";
         const sourceId = selected && selected.dataset.id ? selected.dataset.id : "";
@@ -696,6 +866,507 @@
         if (event.target === els.dialog) closeDialog();
       });
       render();
+    })();
+  </script>
+  <script>
+    (() => {
+      "use strict";
+      const TASKS_KEY = "daily_tasks_v1";
+      const DISMISSED_KEY = "dismissed_dollar_tasks_v1";
+      const CASES_KEY = "notes_v1";
+      const INCIDENTS_KEY = "incidents_v1";
+      const AUTO_MARKER = "auto-dollar-case";
+      const statuses = [
+        ["todo", "To do"],
+        ["progress", "In progress"],
+        ["waiting", "Waiting"],
+        ["done", "Done"],
+      ];
+      const today = localDateKey(new Date());
+      let tasks = readArray(TASKS_KEY);
+      let cases = readArray(CASES_KEY);
+      let incidents = readArray(INCIDENTS_KEY);
+      let selectedDate = today;
+      let allDates = true;
+      let activeFilter = "all";
+      let searchTerm = "";
+      let editingId = null;
+      const els = {
+        body: document.getElementById("taskTableBody"),
+        search: document.getElementById("taskSearch"),
+        add: document.getElementById("addTask"),
+        dialog: document.getElementById("taskDialog"),
+        form: document.getElementById("taskForm"),
+        title: document.getElementById("taskTitle"),
+        description: document.getElementById("taskDescription"),
+        source: document.getElementById("taskSource"),
+        priority: document.getElementById("taskPriority"),
+        date: document.getElementById("taskDate"),
+        status: document.getElementById("taskStatus"),
+        dialogTitle: document.getElementById("dialogTitle"),
+        dayPicker: document.getElementById("dayPicker"),
+        dayLabel: document.getElementById("dayLabel"),
+        daySubtitle: document.getElementById("daySubtitle"),
+        taskCount: document.getElementById("dayTaskCount"),
+        doneCount: document.getElementById("dayDoneCount"),
+        allDates: document.getElementById("allTasksButton"),
+      };
+
+      function readArray(key) {
+        try {
+          const value = JSON.parse(localStorage.getItem(key) || "[]");
+          return Array.isArray(value) ? value : [];
+        } catch {
+          return [];
+        }
+      }
+      function localDateKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      }
+      function formatDate(key) {
+        if (!key) return "No date";
+        const [year, month, day] = String(key).split("-").map(Number);
+        if (!year || !month || !day) return "No date";
+        return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+          month: "short", day: "numeric", year: year === new Date().getFullYear() ? undefined : "numeric",
+        });
+      }
+      function makeId() {
+        return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+      function plainText(value) {
+        const text = String(value == null ? "" : value);
+        if (!/<[a-z][\s\S]*>/i.test(text)) return text;
+        const holder = document.createElement("div");
+        holder.innerHTML = text;
+        return holder.textContent || holder.innerText || "";
+      }
+      function caseText(item) {
+        return String(item && (item.rawContent || plainText(item.content)) || "").trim();
+      }
+      function isDollarCase(item) {
+        return caseText(item).includes("$");
+      }
+      function caseFor(id) {
+        return cases.find((item) => String(item.id) === String(id));
+      }
+      function isDollarTask(task) {
+        return task.autoGenerated === AUTO_MARKER ||
+          (task.sourceType === "case" && !!caseFor(task.sourceId) && isDollarCase(caseFor(task.sourceId)));
+      }
+      function save(nextTasks) {
+        try {
+          localStorage.setItem(TASKS_KEY, JSON.stringify(nextTasks));
+          tasks = nextTasks;
+          return true;
+        } catch {
+          alert("Could not save tasks in this browser. Storage may be full or disabled.");
+          return false;
+        }
+      }
+      function syncDollarCases() {
+        const dismissed = new Set(readArray(DISMISSED_KEY).map(String));
+        const linked = new Set(tasks
+          .filter((task) => task.sourceType === "case" && task.sourceId != null)
+          .map((task) => String(task.sourceId)));
+        let added = 0;
+        cases.forEach((item) => {
+          const id = String(item.id);
+          if (!isDollarCase(item) || linked.has(id) || dismissed.has(id)) return;
+          const title = String(item.title || "Untitled case").trim();
+          const content = caseText(item);
+          tasks.unshift({
+            id: makeId(),
+            title: `Review $ case — ${title}`,
+            description: `This case contains a "$" marker. Review the details before closing.\n\n${content}`.slice(0, 2200),
+            priority: "Normal",
+            date: today,
+            status: "todo",
+            sourceType: "case",
+            sourceId: id,
+            sourceLabel: `Case · ${title}${item.cc ? ` · ${item.cc}` : ""}`,
+            autoGenerated: AUTO_MARKER,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+          linked.add(id);
+          added++;
+        });
+        if (added) {
+          try { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }
+          catch { alert("Some marked cases could not be added because browser storage is full."); }
+        }
+      }
+      function getSourceLabel(task) {
+        if (task.sourceType === "case") {
+          const item = caseFor(task.sourceId);
+          return item ? `Case · ${item.title || "Untitled"}${item.cc ? ` · ${item.cc}` : ""}` : task.sourceLabel || "Case";
+        }
+        if (task.sourceType === "incident") {
+          const item = incidents.find((entry) => String(entry.id) === String(task.sourceId));
+          return item ? `Incident · ${item.category || "Other"} · ${item.title || "Untitled"}` : task.sourceLabel || "Incident";
+        }
+        return "—";
+      }
+      function getSourceText(task) {
+        if (task.sourceType === "case") return caseText(caseFor(task.sourceId));
+        if (task.sourceType === "incident") {
+          const item = incidents.find((entry) => String(entry.id) === String(task.sourceId));
+          return String(item && item.description || "").trim();
+        }
+        return "";
+      }
+      function createButton(label, title, className, onClick) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.title = title;
+        button.setAttribute("aria-label", title);
+        button.addEventListener("click", onClick);
+        return button;
+      }
+      function appendDetail(parent, label, value) {
+        if (!value) return;
+        const section = document.createElement("div");
+        const heading = document.createElement("span");
+        heading.className = "detail-label";
+        heading.textContent = label;
+        const text = document.createElement("div");
+        text.textContent = value;
+        section.append(heading, text);
+        parent.appendChild(section);
+      }
+      async function copyText(text) {
+        if (!text.trim()) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            throw new Error("Clipboard API unavailable");
+          }
+        } catch {
+          const area = document.createElement("textarea");
+          area.value = text;
+          area.style.position = "fixed";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          const copied = document.execCommand("copy");
+          area.remove();
+          if (!copied) {
+            alert("Copy failed. Select and copy the text from the expanded row.");
+            return;
+          }
+        }
+        announce("Copied task and linked text.");
+      }
+      let announceTimer;
+      function announce(message) {
+        let toast = document.getElementById("taskToast");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.id = "taskToast";
+          toast.setAttribute("role", "status");
+          Object.assign(toast.style, {
+            position: "fixed", bottom: "20px", left: "50%", transform: "translateX(-50%)",
+            zIndex: "30", padding: "10px 14px", borderRadius: "10px", color: "#fff",
+            background: "#10233f", boxShadow: "0 8px 24px rgba(16,35,63,.22)", fontSize: ".82rem",
+          });
+          document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.hidden = false;
+        clearTimeout(announceTimer);
+        announceTimer = setTimeout(() => { toast.hidden = true; }, 2200);
+      }
+      function taskTextToCopy(task) {
+        const source = getSourceText(task);
+        return [
+          task.title || "Untitled task",
+          task.description || "",
+          source ? `Related ${task.sourceType === "case" ? "case" : "incident"}:\n${source}` : "",
+        ].filter(Boolean).join("\n\n");
+      }
+      function scopedTasks() {
+        return tasks.filter((task) => allDates || task.date === selectedDate);
+      }
+      function visibleTasks() {
+        const query = searchTerm.trim().toLocaleLowerCase();
+        return scopedTasks().filter((task) => {
+          if (activeFilter === "dollar" && !isDollarTask(task)) return false;
+          if (activeFilter === "active" && (task.status || "todo") === "done") return false;
+          if (!query) return true;
+          const haystack = [
+            task.title, task.description, getSourceLabel(task), getSourceText(task),
+            task.status, task.priority, task.date,
+          ].join(" ").toLocaleLowerCase();
+          return haystack.includes(query);
+        }).sort((a, b) => String(a.date || "9999-99-99").localeCompare(String(b.date || "9999-99-99")) ||
+          String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+      }
+      function renderRow(task) {
+        const row = document.createElement("tr");
+        row.className = "task-row";
+        const nameCell = document.createElement("td");
+        nameCell.className = "task-name";
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = task.title || "Untitled task";
+        details.appendChild(summary);
+        const detailBody = document.createElement("div");
+        detailBody.className = "task-details";
+        appendDetail(detailBody, "Task details", task.description || "No extra details.");
+        appendDetail(detailBody, "Original case / incident text", getSourceText(task));
+        const copyExpanded = createButton("Copy text", "Copy the task and related source text", "copy-text-button", () => copyText(taskTextToCopy(task)));
+        detailBody.appendChild(copyExpanded);
+        details.appendChild(detailBody);
+        nameCell.appendChild(details);
+        if (isDollarTask(task)) {
+          const badge = document.createElement("span");
+          badge.className = "dollar-badge";
+          badge.textContent = "$ case";
+          nameCell.appendChild(badge);
+        }
+
+        const sourceCell = document.createElement("td");
+        const sourceLabel = document.createElement("div");
+        sourceLabel.className = "related-text";
+        sourceLabel.textContent = getSourceLabel(task);
+        sourceCell.appendChild(sourceLabel);
+        if (task.sourceType) {
+          const sourceType = document.createElement("span");
+          sourceType.className = "source-type";
+          sourceType.textContent = task.sourceType === "case" ? "Customer case" : "Service incident";
+          sourceCell.appendChild(sourceType);
+        }
+
+        const statusCell = document.createElement("td");
+        const status = document.createElement("select");
+        status.className = "table-select";
+        status.setAttribute("aria-label", `Update status for ${task.title || "task"}`);
+        statuses.forEach(([value, label]) => status.add(new Option(label, value)));
+        status.value = statuses.some(([value]) => value === task.status) ? task.status : "todo";
+        status.addEventListener("change", () => updateTask(task.id, { status: status.value }));
+        statusCell.appendChild(status);
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = formatDate(task.date);
+        dateCell.style.whiteSpace = "nowrap";
+
+        const priorityCell = document.createElement("td");
+        const priority = document.createElement("span");
+        priority.className = `task-priority priority-${String(task.priority || "normal").toLowerCase()}`;
+        priority.textContent = task.priority || "Normal";
+        priorityCell.appendChild(priority);
+
+        const actionsCell = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "row-actions";
+        actions.append(
+          createButton("Copy", "Copy task and related text", "row-action", () => copyText(taskTextToCopy(task))),
+          createButton("Edit", "Edit task", "row-action", () => openDialog(task)),
+          createButton("Delete", "Delete task", "row-action delete", () => deleteTask(task.id)),
+        );
+        actionsCell.appendChild(actions);
+        row.append(nameCell, sourceCell, statusCell, dateCell, priorityCell, actionsCell);
+        return row;
+      }
+      function render() {
+        els.dayPicker.value = selectedDate;
+        els.allDates.setAttribute("aria-pressed", String(allDates));
+        els.allDates.classList.toggle("active", allDates);
+        els.dayLabel.textContent = allDates ? "All dates" : (selectedDate === today ? "Today" : formatDate(selectedDate));
+        els.daySubtitle.textContent = allDates ? "Showing tasks across all dates" : "";
+        const scoped = scopedTasks();
+        els.taskCount.textContent = scoped.length;
+        els.doneCount.textContent = scoped.filter((task) => task.status === "done").length;
+        const rows = visibleTasks();
+        els.body.replaceChildren();
+        if (!rows.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.className = "table-empty";
+          cell.colSpan = 6;
+          const isSearching = !!searchTerm || activeFilter !== "all";
+          cell.textContent = isSearching
+            ? "No tasks match these filters. Try a different search or filter."
+            : "No tasks for this view. Add a task or switch to All dates.";
+          row.appendChild(cell);
+          els.body.appendChild(row);
+          return;
+        }
+        rows.forEach((task) => els.body.appendChild(renderRow(task)));
+      }
+      function buildSourceOptions(selected = "") {
+        els.source.replaceChildren(new Option("No linked case or incident", ""));
+        cases.forEach((item) => {
+          const option = new Option(`Case · ${item.title || "Untitled"}${item.cc ? ` · ${item.cc}` : ""}`, `case:${item.id}`);
+          option.dataset.type = "case";
+          option.dataset.id = String(item.id);
+          option.dataset.title = item.title || "Untitled";
+          option.dataset.description = caseText(item).slice(0, 180);
+          els.source.add(option);
+        });
+        incidents.forEach((item) => {
+          const option = new Option(`Incident · ${item.category || "Other"} · ${item.title || "Untitled"}`, `incident:${item.id}`);
+          option.dataset.type = "incident";
+          option.dataset.id = String(item.id);
+          option.dataset.title = item.title || "Untitled";
+          option.dataset.description = String(item.description || "").slice(0, 180);
+          els.source.add(option);
+        });
+        if (selected && !Array.from(els.source.options).some((option) => option.value === selected)) {
+          els.source.add(new Option("Linked record no longer available", selected));
+        }
+        els.source.value = selected;
+      }
+      function openDialog(task = null) {
+        editingId = task ? task.id : null;
+        els.dialogTitle.textContent = task ? "Edit task" : "Add task";
+        els.title.value = task ? task.title || "" : "";
+        els.description.value = task ? task.description || "" : "";
+        els.priority.value = task ? task.priority || "Normal" : "Normal";
+        els.date.value = task ? task.date || today : (allDates ? today : selectedDate);
+        els.status.value = task ? task.status || "todo" : "todo";
+        buildSourceOptions(task && task.sourceType && task.sourceId ? `${task.sourceType}:${task.sourceId}` : "");
+        if (typeof els.dialog.showModal === "function") els.dialog.showModal();
+        else els.dialog.setAttribute("open", "");
+        requestAnimationFrame(() => els.title.focus());
+      }
+      function closeDialog() {
+        editingId = null;
+        els.form.reset();
+        if (typeof els.dialog.close === "function") els.dialog.close();
+        else els.dialog.removeAttribute("open");
+      }
+      function updateTask(id, changes) {
+        const next = tasks.map((task) => String(task.id) === String(id)
+          ? { ...task, ...changes, updatedAt: new Date().toISOString() }
+          : task);
+        if (save(next)) render();
+      }
+      function deleteTask(id) {
+        const task = tasks.find((item) => String(item.id) === String(id));
+        if (!task) return;
+        if (!confirm(`Delete “${task.title || "Untitled task"}”? The linked case or incident will remain.`)) return;
+        const next = tasks.filter((item) => String(item.id) !== String(id));
+        if (!save(next)) return;
+        if (task.sourceType === "case" && task.sourceId != null && isDollarTask(task)) {
+          const dismissed = new Set(readArray(DISMISSED_KEY).map(String));
+          dismissed.add(String(task.sourceId));
+          try { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed])); }
+          catch { console.warn("Could not save the deleted marked-case preference."); }
+        }
+        render();
+        announce("Task deleted. The linked case is unchanged.");
+      }
+      function selectDay(date) {
+        if (!date) return;
+        selectedDate = date;
+        allDates = false;
+        render();
+      }
+
+      syncDollarCases();
+      render();
+      els.add.addEventListener("click", () => openDialog());
+      document.getElementById("closeDialog").addEventListener("click", closeDialog);
+      document.getElementById("cancelDialog").addEventListener("click", closeDialog);
+      document.getElementById("previousDay").addEventListener("click", () => {
+        const [year, month, day] = selectedDate.split("-").map(Number);
+        const date = new Date(year, month - 1, day - 1);
+        selectDay(localDateKey(date));
+      });
+      document.getElementById("nextDay").addEventListener("click", () => {
+        const [year, month, day] = selectedDate.split("-").map(Number);
+        const date = new Date(year, month - 1, day + 1);
+        selectDay(localDateKey(date));
+      });
+      document.getElementById("todayButton").addEventListener("click", () => selectDay(today));
+      els.allDates.addEventListener("click", () => { allDates = true; render(); });
+      els.dayPicker.addEventListener("change", () => selectDay(els.dayPicker.value));
+      els.search.addEventListener("input", () => {
+        searchTerm = els.search.value;
+        render();
+      });
+      document.querySelectorAll(".task-filter").forEach((button) => button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll(".task-filter").forEach((filter) =>
+          filter.setAttribute("aria-pressed", String(filter === button)));
+        render();
+      }));
+      els.form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const title = els.title.value.trim();
+        if (!title || !els.date.value) return;
+        const selected = els.source.selectedOptions[0];
+        const sourceType = selected && selected.dataset.type ? selected.dataset.type : "";
+        const sourceId = selected && selected.dataset.id ? selected.dataset.id : "";
+        const sourceLabel = sourceType && selected.dataset.title
+          ? `${sourceType === "case" ? "Case" : "Incident"} · ${selected.dataset.title}`
+          : "";
+        const now = new Date().toISOString();
+        const fields = {
+          title,
+          description: els.description.value.trim(),
+          priority: els.priority.value,
+          date: els.date.value,
+          status: els.status.value,
+          sourceType,
+          sourceId,
+          sourceLabel,
+          updatedAt: now,
+        };
+        let next;
+        if (editingId) {
+          next = tasks.map((task) => {
+            if (String(task.id) !== String(editingId)) return task;
+            const updated = { ...task, ...fields };
+            const linkedCase = sourceType === "case" ? caseFor(sourceId) : null;
+            if (task.autoGenerated === AUTO_MARKER && linkedCase && isDollarCase(linkedCase)) {
+              updated.autoGenerated = AUTO_MARKER;
+            } else {
+              delete updated.autoGenerated;
+            }
+            return updated;
+          });
+        } else {
+          next = [{ id: makeId(), ...fields, createdAt: now }, ...tasks];
+        }
+        if (save(next)) {
+          selectedDate = els.date.value;
+          allDates = false;
+          closeDialog();
+          render();
+          announce(wasEditing ? "Task updated." : "Task added.");
+        }
+      });
+      els.source.addEventListener("change", () => {
+        const option = els.source.selectedOptions[0];
+        if (!option) return;
+        if (!els.title.value.trim() && option.dataset.title) els.title.value = `Follow up: ${option.dataset.title}`;
+        if (!els.description.value.trim() && option.dataset.description) els.description.value = option.dataset.description;
+      });
+      els.dialog.addEventListener("click", (event) => {
+        if (event.target === els.dialog) closeDialog();
+      });
+      window.addEventListener("storage", (event) => {
+        if (![TASKS_KEY, CASES_KEY, INCIDENTS_KEY, DISMISSED_KEY].includes(event.key)) return;
+        tasks = readArray(TASKS_KEY);
+        cases = readArray(CASES_KEY);
+        incidents = readArray(INCIDENTS_KEY);
+        syncDollarCases();
+        render();
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) return;
+        tasks = readArray(TASKS_KEY);
+        cases = readArray(CASES_KEY);
+        incidents = readArray(INCIDENTS_KEY);
+        syncDollarCases();
+        render();
+      });
     })();
   </script>
 </body>
